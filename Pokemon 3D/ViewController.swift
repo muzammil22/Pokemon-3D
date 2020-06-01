@@ -22,6 +22,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
+        sceneView.autoenablesDefaultLighting = true
         
     }
     
@@ -57,32 +58,54 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
         let node = SCNNode()
-        
-        if let imageAnchor = anchor as? ARImageAnchor {
+        DispatchQueue.main.async {
+            if let imageAnchor = anchor as? ARImageAnchor {
+                
+
+                let plane = SCNPlane(width: imageAnchor.referenceImage.physicalSize.width - 0.005, height: imageAnchor.referenceImage.physicalSize.height)
+                
+                plane.firstMaterial?.diffuse.contents = UIColor(white: 1.0, alpha: 0.5)
+                
+                let planeNode = SCNNode(geometry: plane)
+                
+                planeNode.eulerAngles.x = -.pi/2
+                
+                node.addChildNode(planeNode)
+                
+//                if let kingScene = SCNScene(named: "art.scnassets/king.scn") {
+//                    if let kingNode = kingScene.rootNode.childNodes.first {
+//                        planeNode.addChildNode(kingNode)
+//                    }
+//                }
+                if imageAnchor.referenceImage.name == "king" {
+                    if let kingScene = SCNScene(named: "art.scnassets/king.scn") {
+                        
+                        if let kingNode = kingScene.rootNode.childNodes.first {
+                            
+                            //                        pokeNode.eulerAngles.x = .pi / 2
+                            
+                            planeNode.addChildNode(kingNode)
+                        }
+                    }
+                }
+                if imageAnchor.referenceImage.name == "one" {
+                    if let oneScene = SCNScene(named: "art.scnassets/eevee.scn") {
+                        
+                        if let oneNode = oneScene.rootNode.childNodes.first {
+                            
+                            oneNode.eulerAngles.x = .pi / 2
+                            
+                            planeNode.addChildNode(oneNode)
+                        }
+                    }
+                }
+                
+                
+            }
             
-//            let videoNode = SKVideoNode(fileNamed: "harrypotter.mp4")
-//            videoNode.play()
-            
-//            let videoScene = SKScene(size: CGSize(width: 480, height: 360))
-            
-//            videoNode.position = CGPoint(x: videoScene.size.width/2, y: videoScene.size.height/2)
-//
-//            videoNode.yScale = -1.0
-//
-//            videoScene.addChild(videoNode)
-//
-            let plane = SCNPlane(width: imageAnchor.referenceImage.physicalSize.width - 0.005, height: imageAnchor.referenceImage.physicalSize.height)
-            
-            plane.firstMaterial?.diffuse.contents = UIColor(white: 1.0, alpha: 0.5)
-            
-            let planeNode = SCNNode(geometry: plane)
-            
-            planeNode.eulerAngles.x = -.pi/2
-            
-            node.addChildNode(planeNode)
         }
-        
         return node
+        
     }
     
 }
